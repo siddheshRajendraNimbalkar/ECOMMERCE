@@ -5,8 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const product_1 = require("../controllers/product");
+const feacture_1 = require("../controllers/feacture");
 const routes = express_1.default.Router();
 routes.post('/new', product_1.createProduct);
+routes.get('/productByKey', feacture_1.getProductByKey);
 routes.get('/allproducts', product_1.getAllProduct);
 routes.get('/getproduct/:id', product_1.getproduct);
 routes.put('/:id', product_1.updateproduct);

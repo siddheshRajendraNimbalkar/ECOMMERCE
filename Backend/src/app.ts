@@ -5,10 +5,11 @@ app.use(express.json());
 
 // routes
 import product from "./routes/productRoutes"
+import user from "./routes/userRoutes"
 import errorMiddleware from "./middleware/error";
 app.use(errorMiddleware)
 app.use("/api/v1/product",product)
-
+app.use("/api/v1/User",user);
 
 
 export default app;

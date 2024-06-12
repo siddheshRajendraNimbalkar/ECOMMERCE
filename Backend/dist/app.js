@@ -8,7 +8,9 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // routes
 const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const error_1 = __importDefault(require("./middleware/error"));
 app.use(error_1.default);
 app.use("/api/v1/product", productRoutes_1.default);
+app.use("/api/v1/User", userRoutes_1.default);
 exports.default = app;

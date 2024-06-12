@@ -5,7 +5,7 @@ import asyncHandler from '../middleware/asyncError'
 export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, description, price, rating, images, category, stock, numOfReview, review } = req.body;
-  
+      
       if (!name || !description || !price) {
         return res.status(400).json({ success: false, message: 'Name, description, and price are required' });
       }
