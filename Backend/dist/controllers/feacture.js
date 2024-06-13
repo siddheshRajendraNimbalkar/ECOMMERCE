@@ -17,7 +17,6 @@ const productModule_1 = __importDefault(require("../module/productModule"));
 const asyncError_1 = __importDefault(require("../middleware/asyncError"));
 exports.getProductByKey = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const productByKey = yield productModule_1.default.find(req.query);
-    console.log(productByKey.length);
     if (!productByKey.length) {
         return res.json({
             sucess: false,

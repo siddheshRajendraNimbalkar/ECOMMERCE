@@ -4,7 +4,6 @@ import asyncHandler from '../middleware/asyncError'
 
 export const getProductByKey = asyncHandler(async(req:Request,res:Response) =>{
     const productByKey = await Product.find(req.query)
-    console.log(productByKey.length)
     if(!productByKey.length){
       return res.json({
         sucess:false,

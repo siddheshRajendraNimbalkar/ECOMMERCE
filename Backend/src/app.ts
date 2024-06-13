@@ -1,12 +1,15 @@
 import express,{Express} from "express";
-
+import cookieParser from "cookie-parser"
 const app: Express = express();
 app.use(express.json());
+app.use(cookieParser())
 
 // routes
 import product from "./routes/productRoutes"
 import user from "./routes/userRoutes"
 import errorMiddleware from "./middleware/error";
+
+
 app.use(errorMiddleware)
 app.use("/api/v1/product",product)
 app.use("/api/v1/User",user);

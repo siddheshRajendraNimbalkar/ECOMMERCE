@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.registerUser = void 0;
+exports.logoutRoute = exports.loginUser = exports.registerUser = void 0;
 const asyncError_1 = __importDefault(require("../middleware/asyncError"));
 const user_1 = __importDefault(require("../module/user"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -21,6 +21,20 @@ exports.registerUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0,
     const { username, email, password } = req.body;
     var salt = bcryptjs_1.default.genSaltSync(10);
     var hash = bcryptjs_1.default.hashSync(password, salt);
+    if (!username || !email || !password) {
+        res.json({
+            success: "false",
+            message: "enter username email password"
+        });
+    }
+    const Email = yield user_1.default.find({ email: email });
+    if (Email) {
+        return res.json({
+            success: false,
+            message: "user exist"
+        });
+    }
+    ;
     const user = yield user_1.default.create({
         username,
         password: hash,
@@ -35,9 +49,12 @@ exports.registerUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0,
     const tocken = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES
     });
+    res.cookie("token", tocken, {
+        expires: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        httpOnly: true
+    });
     return res.status(201).json({
         success: true,
-        token: tocken
     });
 }));
 exports.loginUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,7 +68,7 @@ exports.loginUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0, vo
     if (!user) {
         return res.status(400).json({
             success: false,
-            message: "Invalid Email"
+            message: "Invalid Email or Password",
         });
     }
     ;
@@ -63,9 +80,12 @@ exports.loginUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0, vo
         const tocken = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES
         });
+        res.cookie("token", tocken, {
+            expires: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+            httpOnly: true
+        });
         return res.json({
             success: true,
-            token: tocken
         });
     }
     return res.json({
@@ -73,3 +93,14 @@ exports.loginUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0, vo
         message: "Invalid Password"
     });
 }));
+const logoutRoute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true
+    });
+    res.json({
+        success: true,
+        message: "Logged out"
+    });
+});
+exports.logoutRoute = logoutRoute;

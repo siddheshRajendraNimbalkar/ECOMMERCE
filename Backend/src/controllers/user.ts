@@ -10,6 +10,22 @@ export const registerUser = asyncHandler(async(req: Request,res: Response) =>{
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
 
+    if(!username || !email || !password){
+        res.json({
+            success:"false",
+            message:"enter username email password"
+        })
+    }
+
+    const Email = await User.find({email:email})
+
+    if(Email){
+        return res.json({
+            success:false,
+            message:"user exist"
+        })
+    };
+
     const user = await User.create({
         username,
         password:hash,
@@ -26,9 +42,14 @@ export const registerUser = asyncHandler(async(req: Request,res: Response) =>{
     const tocken = jwt.sign({userId:user._id},process.env.JWT_SECRET,{
         expiresIn:process.env.JWT_EXPIRES
     })
+
+    res.cookie("token",tocken,{
+        expires:new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        httpOnly:true   
+    })
+
     return res.status(201).json({
         success:true,
-        token:tocken
     })
   })
 
@@ -46,7 +67,8 @@ export const registerUser = asyncHandler(async(req: Request,res: Response) =>{
     if(!user){
         return res.status(400).json({
             success:false,
-            message:"Invalid Email"
+            message:"Invalid Email or Password",
+
         })
     };
 
@@ -61,9 +83,12 @@ export const registerUser = asyncHandler(async(req: Request,res: Response) =>{
         expiresIn:process.env.JWT_EXPIRES
     })
 
+    res.cookie("token",tocken,{
+        expires:new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        httpOnly:true   
+    })
         return res.json({
             success:true,
-            token:tocken
         })
     }
     return  res.json({
@@ -71,3 +96,16 @@ export const registerUser = asyncHandler(async(req: Request,res: Response) =>{
         message:"Invalid Password"
     })
   })
+
+
+ export const logoutRoute = async(req:Request,res:Response)=>{
+    res.cookie("token",null,{
+        expires:new Date(Date.now()),
+        httpOnly:true   
+    })
+
+    res.json({
+        success:true,
+        message:"Logged out"
+    })
+  }
