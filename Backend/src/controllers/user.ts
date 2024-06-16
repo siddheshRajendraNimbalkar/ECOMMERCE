@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'; 
 
 export const registerUser = asyncHandler(async(req: Request,res: Response) =>{
-    const { username,email,password} = req.body;
+    const { username,email,password,isAdmin} = req.body;
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
 
@@ -17,7 +17,7 @@ export const registerUser = asyncHandler(async(req: Request,res: Response) =>{
         })
     }
 
-    const Email = await User.find({email:email})
+    const Email = await User.findOne({email})
 
     if(Email){
         return res.json({
@@ -32,7 +32,8 @@ export const registerUser = asyncHandler(async(req: Request,res: Response) =>{
         email,
         avatar:{
             public_id:"123123"
-        }
+        },
+        isAdmin
     })
 
     if (!process.env.JWT_SECRET) {

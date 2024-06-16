@@ -18,7 +18,7 @@ const user_1 = __importDefault(require("../module/user"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 exports.registerUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, password } = req.body;
+    const { username, email, password, isAdmin } = req.body;
     var salt = bcryptjs_1.default.genSaltSync(10);
     var hash = bcryptjs_1.default.hashSync(password, salt);
     if (!username || !email || !password) {
@@ -27,7 +27,7 @@ exports.registerUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0,
             message: "enter username email password"
         });
     }
-    const Email = yield user_1.default.find({ email: email });
+    const Email = yield user_1.default.findOne({ email });
     if (Email) {
         return res.json({
             success: false,
@@ -41,7 +41,8 @@ exports.registerUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0,
         email,
         avatar: {
             public_id: "123123"
-        }
+        },
+        isAdmin
     });
     if (!process.env.JWT_SECRET) {
         return res.status(500).json({ success: false, message: 'JWT secret is not defined' });

@@ -1,7 +1,5 @@
 import express from "express";
 import { loginUser, logoutRoute, registerUser } from "../controllers/user";
-import { isAuthUser } from "../middleware/auth";
-
 const userRoutes = express.Router()
 
 // http://localhost:4000/api/v1/User/register

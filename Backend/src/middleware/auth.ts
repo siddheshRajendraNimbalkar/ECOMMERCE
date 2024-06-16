@@ -34,9 +34,10 @@ export const isAuthUser = async (req: Request, res: Response, next: NextFunction
             });
         }
 
-        (req as any).user = user;
+        res.locals.user = user;
         next();
     } catch (error) {
+        console.log(error)
         return res.status(400).json({
             success: false,
             message: "Invalid token."

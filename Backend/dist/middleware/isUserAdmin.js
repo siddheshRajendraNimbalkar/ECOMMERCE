@@ -12,42 +12,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isAuthUser = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+exports.isUserAdmin = void 0;
 const user_1 = __importDefault(require("../module/user"));
-const isAuthUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const isUserAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.token;
     if (!token) {
-        return res.status(401).json({
+        res.json({
             success: false,
-            message: "Access denied. No token provided."
+            message: "login first"
         });
     }
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-        return res.status(500).json({
+    const id = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+    const user = yield user_1.default.findById(id.userId);
+    if (user && !user.isAdmin) {
+        res.json({
             success: false,
-            message: 'JWT secret is not defined'
+            message: "you are not admin"
         });
     }
-    try {
-        const verifyJWT = jsonwebtoken_1.default.verify(token, jwtSecret);
-        const user = yield user_1.default.findById(verifyJWT.userId);
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: "Access denied. User not found."
-            });
-        }
-        res.locals.user = user;
-        next();
-    }
-    catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            success: false,
-            message: "Invalid token."
-        });
-    }
+    next();
 });
-exports.isAuthUser = isAuthUser;
+exports.isUserAdmin = isUserAdmin;

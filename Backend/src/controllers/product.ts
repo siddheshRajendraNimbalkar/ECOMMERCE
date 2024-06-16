@@ -40,7 +40,7 @@ export const getAllProduct = asyncHandler(async(req: Request,res: Response) =>{
     return res.json({
       success: true,
       getallproduct
-    })
+    });
   }
 
   return res.json({
