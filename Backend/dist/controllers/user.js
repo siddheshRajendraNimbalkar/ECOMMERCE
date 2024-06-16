@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logoutRoute = exports.loginUser = exports.registerUser = void 0;
+exports.changepassword = exports.userDetails = exports.logoutRoute = exports.loginUser = exports.registerUser = void 0;
 const asyncError_1 = __importDefault(require("../middleware/asyncError"));
 const user_1 = __importDefault(require("../module/user"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -24,35 +24,36 @@ exports.registerUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0,
     if (!username || !email || !password) {
         res.json({
             success: "false",
-            message: "enter username email password"
+            message: "enter username email password",
         });
     }
     const Email = yield user_1.default.findOne({ email });
     if (Email) {
         return res.json({
             success: false,
-            message: "user exist"
+            message: "user exist",
         });
     }
-    ;
     const user = yield user_1.default.create({
         username,
         password: hash,
         email,
         avatar: {
-            public_id: "123123"
+            public_id: "123123",
         },
-        isAdmin
+        isAdmin,
     });
     if (!process.env.JWT_SECRET) {
-        return res.status(500).json({ success: false, message: 'JWT secret is not defined' });
+        return res
+            .status(500)
+            .json({ success: false, message: "JWT secret is not defined" });
     }
     const tocken = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES
+        expiresIn: process.env.JWT_EXPIRES,
     });
     res.cookie("token", tocken, {
         expires: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-        httpOnly: true
+        httpOnly: true,
     });
     return res.status(201).json({
         success: true,
@@ -62,7 +63,7 @@ exports.loginUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0, vo
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).json({
-            message: "Please Enter Email and Password"
+            message: "Please Enter Email and Password",
         });
     }
     const user = yield user_1.default.findOne({ email });
@@ -72,18 +73,19 @@ exports.loginUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0, vo
             message: "Invalid Email or Password",
         });
     }
-    ;
     const isPasswordValid = yield bcryptjs_1.default.compare(password, user.password);
     if (isPasswordValid) {
         if (!process.env.JWT_SECRET) {
-            return res.status(500).json({ success: false, message: 'JWT secret is not defined' });
+            return res
+                .status(500)
+                .json({ success: false, message: "JWT secret is not defined" });
         }
         const tocken = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_EXPIRES
+            expiresIn: process.env.JWT_EXPIRES,
         });
         res.cookie("token", tocken, {
             expires: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-            httpOnly: true
+            httpOnly: true,
         });
         return res.json({
             success: true,
@@ -91,17 +93,75 @@ exports.loginUser = (0, asyncError_1.default)((req, res) => __awaiter(void 0, vo
     }
     return res.json({
         success: false,
-        message: "Invalid Password"
+        message: "Invalid Password",
     });
 }));
 const logoutRoute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.cookie("token", null, {
         expires: new Date(Date.now()),
-        httpOnly: true
+        httpOnly: true,
     });
     res.json({
         success: true,
-        message: "Logged out"
+        message: "Logged out",
     });
 });
 exports.logoutRoute = logoutRoute;
+const userDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    if (user) {
+        res.status(200).json({
+            success: true,
+            user: user,
+        });
+    }
+});
+exports.userDetails = userDetails;
+const changepassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        const findUser = yield user_1.default.findOne({ email: user.email }).select("+password");
+        if (!findUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+        const { current, newpass } = req.body;
+        if (!current || !newpass) {
+            return res.status(400).json({
+                success: false,
+                message: "Current password and new password are required"
+            });
+        }
+        const correctPassword = yield bcryptjs_1.default.compare(current, findUser.password);
+        if (!correctPassword) {
+            return res.json({
+                success: false,
+                message: "Invalid password"
+            });
+        }
+        ;
+        const hashpassword = yield bcryptjs_1.default.hash(newpass, 10);
+        findUser.password = hashpassword;
+        const done = yield findUser.save();
+        if (!done) {
+            return res.status(200).json({
+                success: false,
+                message: "something went wrong"
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Password updated successfully"
+        });
+    }
+    catch (error) {
+        console.log(`error:${error}`);
+        res.json({
+            success: false,
+            message: "Something wen't wrong"
+        });
+    }
+});
+exports.changepassword = changepassword;

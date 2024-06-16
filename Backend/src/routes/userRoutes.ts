@@ -1,5 +1,6 @@
 import express from "express";
-import { loginUser, logoutRoute, registerUser } from "../controllers/user";
+import { changepassword, loginUser, logoutRoute, registerUser, userDetails } from "../controllers/user";
+import { isAuthUser } from "../middleware/auth";
 const userRoutes = express.Router()
 
 // http://localhost:4000/api/v1/User/register
@@ -7,5 +8,9 @@ const userRoutes = express.Router()
 userRoutes.post('/register', registerUser);
 userRoutes.post('/login',loginUser)
 userRoutes.post('/logout',logoutRoute)
+
+userRoutes.use(isAuthUser);
+userRoutes.put('/me',userDetails);
+userRoutes.post('/updatepassword',changepassword)
 
 export default userRoutes;

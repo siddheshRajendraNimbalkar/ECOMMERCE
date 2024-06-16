@@ -34,7 +34,7 @@ export const isAuthUser = async (req: Request, res: Response, next: NextFunction
             });
         }
 
-        res.locals.user = user;
+        (req as any).user = user;
         next();
     } catch (error) {
         console.log(error)

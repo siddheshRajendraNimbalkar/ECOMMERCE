@@ -39,7 +39,7 @@ const isAuthUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
                 message: "Access denied. User not found."
             });
         }
-        res.locals.user = user;
+        req.user = user;
         next();
     }
     catch (error) {

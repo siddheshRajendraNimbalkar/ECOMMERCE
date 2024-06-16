@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
-import validator from "validator";
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true },
     email: { type: String, required: true},
-    password: { type: String, required: true, Selection:false },
+    password: { type: String, required: true, select:false },
     avatar:{ public_id:{type:String,require:true},product_URL:{type:String,require:true,default:"https://t4.ftcdn.net/jpg/02/15/84/43/360_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg"}},
     isAdmin: { type: Boolean, default: false },
     resetPasswordToken: String,

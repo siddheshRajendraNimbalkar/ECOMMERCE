@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 export const isAdmin = (req:Request,res:Response,next:NextFunction) => {
-    const isAuth = res.locals.user;
+    const isAuth = (req as any).user;
     if(isAuth.isAdmin){
         return next();
     }
