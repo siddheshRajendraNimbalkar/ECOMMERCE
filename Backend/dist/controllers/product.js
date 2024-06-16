@@ -17,11 +17,13 @@ const productModule_1 = __importDefault(require("../module/productModule"));
 const asyncError_1 = __importDefault(require("../middleware/asyncError"));
 const createProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const user = req.user;
         const { name, description, price, rating, images, category, stock, numOfReview, review } = req.body;
         if (!name || !description || !price) {
             return res.status(400).json({ success: false, message: 'Name, description, and price are required' });
         }
         const product = yield productModule_1.default.create({
+            author: user._id,
             name,
             description,
             price,

@@ -10,8 +10,6 @@ const userSchema = new mongoose_1.default.Schema({
     password: { type: String, required: true, select: false },
     avatar: { public_id: { type: String, require: true }, product_URL: { type: String, require: true, default: "https://t4.ftcdn.net/jpg/02/15/84/43/360_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg" } },
     isAdmin: { type: Boolean, default: false },
-    resetPasswordToken: String,
-    resetPasswordExpire: Date,
     createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose_1.default.model("User", userSchema);

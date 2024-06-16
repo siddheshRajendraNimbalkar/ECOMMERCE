@@ -4,6 +4,7 @@ import asyncHandler from '../middleware/asyncError'
 
 export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const user = (req as any).user;
       const { name, description, price, rating, images, category, stock, numOfReview, review } = req.body;
       
       if (!name || !description || !price) {
@@ -11,6 +12,7 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
       }
   
       const product = await Product.create({
+        author:user._id,
         name,
         description,
         price,
