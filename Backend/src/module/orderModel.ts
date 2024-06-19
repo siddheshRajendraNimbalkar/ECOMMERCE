@@ -70,8 +70,8 @@ const orderSchema = new mongoose.Schema({
     type: Date,
   },
   CreatedAt:{
-    type:Date.now(),
-    require:true,
+    type:Date,
+    default:Date.now,
   },
 });
 

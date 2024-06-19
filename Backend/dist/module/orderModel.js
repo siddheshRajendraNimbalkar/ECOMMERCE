@@ -49,6 +49,9 @@ const orderSchema = new mongoose_1.default.Schema({
         required: true,
         default: 0.0,
     },
+    Status: {
+        type: String
+    },
     totalPrice: {
         type: Number,
         required: true,
@@ -69,6 +72,10 @@ const orderSchema = new mongoose_1.default.Schema({
     },
     deliveredAt: {
         type: Date,
+    },
+    CreatedAt: {
+        type: Date,
+        default: Date.now,
     },
 });
 const Order = mongoose_1.default.model("Order", orderSchema);
