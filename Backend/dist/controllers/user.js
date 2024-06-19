@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductCreatedByUser = exports.deleteUser = exports.updateUser = exports.changepassword = exports.userDetails = exports.logoutRoute = exports.loginUser = exports.registerUser = void 0;
+exports.updateRole = exports.getProductCreatedByUser = exports.deleteUser = exports.updateUser = exports.changepassword = exports.userDetails = exports.logoutRoute = exports.loginUser = exports.registerUser = void 0;
 const asyncError_1 = __importDefault(require("../middleware/asyncError"));
 const user_1 = __importDefault(require("../module/user"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -276,3 +276,46 @@ const getProductCreatedByUser = (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.getProductCreatedByUser = getProductCreatedByUser;
+const updateRole = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        if (user.isAdmin) {
+            const id = req.params.id;
+            const { isAdmin } = req.body;
+            if (!isAdmin) {
+                return res.json({
+                    success: false,
+                    message: "please enter the isAdmin"
+                });
+            }
+            ;
+            const changeRole = yield user_1.default.findByIdAndUpdate(id, { isAdmin: isAdmin }, {
+                new: true,
+                runValidators: true
+            });
+            if (!changeRole) {
+                return res.json({
+                    success: false,
+                    message: "role is not updated"
+                });
+            }
+            return res.json({
+                success: true,
+                message: "role updated success fully",
+                changeRole
+            });
+        }
+        return res.json({
+            success: false,
+            message: "you are not admin"
+        });
+    }
+    catch (error) {
+        console.log(`Error:${error}`);
+        res.json({
+            success: false,
+            message: "server error",
+        });
+    }
+});
+exports.updateRole = updateRole;

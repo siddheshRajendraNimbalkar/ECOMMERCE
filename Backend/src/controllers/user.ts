@@ -279,3 +279,46 @@ export const getProductCreatedByUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+export const updateRole = async(req:Request,res:Response) => {
+  try{
+    const user = (req as any).user;
+    if(user.isAdmin){
+        const id = req.params.id;
+        const { isAdmin }= req.body;
+        if(!isAdmin){
+          return res.json({
+            success:false,
+            message:"please enter the isAdmin"
+          });
+        };
+        const changeRole = await User.findByIdAndUpdate(id,{isAdmin:isAdmin},{
+          new:true,
+          runValidators:true
+        });
+        if(!changeRole){
+          return res.json({
+            success:false,
+            message:"role is not updated"
+          })
+        }
+        return res.json({
+          success:true,
+          message:"role updated success fully",
+          changeRole
+        })
+    }
+
+    return res.json({
+      success:false,
+      message:"you are not admin"
+    })
+  }catch (error) {
+    console.log(`Error:${error}`);
+    res.json({
+      success: false,
+      message: "server error",
+    });
+  }
+}

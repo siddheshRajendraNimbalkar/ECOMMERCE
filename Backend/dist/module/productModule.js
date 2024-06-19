@@ -71,6 +71,10 @@ const productSchema = new mongoose_1.default.Schema({
     },
     review: [
         {
+            id: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                required: true
+            },
             name: {
                 type: String,
                 require: true,

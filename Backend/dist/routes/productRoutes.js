@@ -15,8 +15,10 @@ routes.get('/allproducts', product_1.getAllProduct);
 routes.get('/getproduct/:id', product_1.getproduct);
 // Auth Routes
 routes.use(auth_1.isAuthUser);
+routes.put('/:id/review', product_1.updateOrCreateProductReview);
+routes.put('/:id/delete', product_1.deleteProductReview);
+routes.put('/:id/rating', product_1.ratingProduct);
 routes.use(isAdmin_1.isAdmin);
 routes.post('/new', product_1.createProduct);
 routes.put('/:id', product_1.updateproduct);
-routes.put('/delete/:id', product_1.deleteProduct);
 exports.default = routes;

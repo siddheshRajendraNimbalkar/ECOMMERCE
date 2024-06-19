@@ -12,15 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProduct = exports.updateproduct = exports.getproduct = exports.getAllProduct = exports.createProduct = void 0;
+exports.ratingProduct = exports.deleteProductReview = exports.updateOrCreateProductReview = exports.getAllReview = exports.deleteProduct = exports.updateproduct = exports.getproduct = exports.getAllProduct = exports.createProduct = void 0;
 const productModule_1 = __importDefault(require("../module/productModule"));
 const asyncError_1 = __importDefault(require("../middleware/asyncError"));
 const createProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = req.user;
-        const { name, description, price, rating, images, category, stock, numOfReview, review } = req.body;
+        const { name, description, price, rating, images, category, stock, numOfReview, review, } = req.body;
         if (!name || !description || !price) {
-            return res.status(400).json({ success: false, message: 'Name, description, and price are required' });
+            return res
+                .status(400)
+                .json({
+                success: false,
+                message: "Name, description, and price are required",
+            });
         }
         const product = yield productModule_1.default.create({
             author: user._id,
@@ -49,23 +54,23 @@ exports.getAllProduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0
     if (getallproduct) {
         return res.json({
             success: true,
-            getallproduct
+            getallproduct,
         });
     }
     return res.json({
-        success: false
+        success: false,
     });
 }));
 exports.getproduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const product = yield productModule_1.default.findById(req.params.id);
     if (!product) {
         return res.json({
-            message: "product not found"
+            message: "product not found",
         });
     }
     res.json({
         success: true,
-        product: product
+        product: product,
     });
 }));
 exports.updateproduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -73,7 +78,7 @@ exports.updateproduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0
     if (!product) {
         return res.status(500).json({
             success: false,
-            message: "something went wrong"
+            message: "something went wrong",
         });
     }
     product = yield productModule_1.default.findByIdAndUpdate(req.params.id, req.body, {
@@ -82,23 +87,209 @@ exports.updateproduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0
     });
     if (!product) {
         return res.json({
-            message: "some thing went wrong"
+            message: "some thing went wrong",
         });
     }
     return res.status(200).json({
         success: true,
-        updateProduct: product
+        updateProduct: product,
     });
 }));
 exports.deleteProduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let product = yield productModule_1.default.findById(req.params.id);
     if (!product) {
         return res.json({
-            message: "invalid product"
+            message: "invalid product",
         });
     }
     yield productModule_1.default.findByIdAndDelete(req.params.id);
     return res.json({
-        success: true
+        success: true,
     });
 }));
+const getAllReview = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const productId = req.params.id;
+    if (!productId) {
+        return res.status(400).json({
+            success: false,
+            message: "Product ID is required",
+        });
+    }
+    try {
+        const product = yield productModule_1.default.findById(productId).populate("review");
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+        return res.json({
+            success: true,
+            reviews: product.review,
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching the product",
+        });
+    }
+});
+exports.getAllReview = getAllReview;
+const updateOrCreateProductReview = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const productId = req.params.id;
+    const user = req.user;
+    const { rating, comment } = req.body;
+    if (!productId) {
+        return res.status(400).json({
+            success: false,
+            message: "Product ID is required"
+        });
+    }
+    if (!rating && !comment) {
+        return res.status(400).json({
+            success: false,
+            message: "Rating or Comment are required to update the review"
+        });
+    }
+    try {
+        const product = yield productModule_1.default.findById(productId);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+        if (!user || !user._id) {
+            return res.status(400).json({
+                success: false,
+                message: "User information is required"
+            });
+        }
+        if (product.review.length == 0) {
+            const newReview = {
+                id: user._id,
+                name: user.username,
+                rating: rating,
+                Comment: comment
+            };
+            product.review.push(newReview);
+            product.numOfReview = product.review.length;
+        }
+        let review = product.review.find((review) => {
+            return review.id && review.id.toString() === user._id.toString();
+        });
+        if (review) {
+            if (rating !== undefined) {
+                review.rating = rating;
+            }
+            if (comment !== undefined) {
+                review.Comment = comment;
+            }
+        }
+        else {
+            const newReview = {
+                id: user._id,
+                name: user.username,
+                rating: rating,
+                Comment: comment
+            };
+            product.review.push(newReview);
+            product.numOfReview = product.review.length;
+        }
+        yield product.save();
+        return res.json({
+            success: true,
+            message: review ? "Review updated successfully" : "Review created successfully"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while updating/creating the review",
+            error: error.message
+        });
+    }
+});
+exports.updateOrCreateProductReview = updateOrCreateProductReview;
+const deleteProductReview = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const productId = req.params.id;
+    const user = req.user;
+    const { reviewId } = req.query;
+    if (!productId) {
+        return res.status(400).json({
+            success: false,
+            message: "Product ID is required"
+        });
+    }
+    if (!reviewId) {
+        return res.status(400).json({
+            success: false,
+            message: "Review ID is required"
+        });
+    }
+    try {
+        const product = yield productModule_1.default.findById(productId);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+        if (!user || !user._id) {
+            return res.status(400).json({
+                success: false,
+                message: "User information is required"
+            });
+        }
+        const review = product.review.id(reviewId);
+        if (!review || review.id.toString() !== user._id.toString()) {
+            return res.status(404).json({
+                success: false,
+                message: "Review not found or user not authorized"
+            });
+        }
+        product.review.pull(reviewId);
+        product.numOfReview = product.review.length;
+        yield product.save();
+        return res.json({
+            success: true,
+            message: "Review deleted successfully"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while deleting the review",
+            error: error.message
+        });
+    }
+});
+exports.deleteProductReview = deleteProductReview;
+const ratingProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield productModule_1.default.findById(req.params.id)
+        .then((product) => {
+        // if(product){
+        //   return res.json({
+        //     success:false,
+        //     message:"product not found",
+        //   })
+        // }
+        let avg = 0;
+        product === null || product === void 0 ? void 0 : product.review.map((e) => avg += e.rating);
+        product.rating = avg / product.review.length;
+        ;
+        product.save();
+        return res.json({
+            success: true,
+            rating: product.rating
+        });
+    }).catch((error) => {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message
+        });
+    });
+});
+exports.ratingProduct = ratingProduct;
