@@ -1,5 +1,5 @@
 import express  from "express";
-import { getAllProduct,createProduct, updateproduct, getproduct, updateOrCreateProductReview, deleteProductReview, ratingProduct } from "../controllers/product";
+import { getAllProduct,createProduct, updateOrCreateProductReview, deleteProductReview, ratingProduct, getProduct, updateProduct } from "../controllers/product";
 import { getProductByKey } from "../controllers/feacture";
 import { isAuthUser } from "../middleware/auth";
 import { isAdmin } from "../middleware/isAdmin";
@@ -13,7 +13,7 @@ const routes = express.Router();
 
 routes.get('/productByKey',getProductByKey)
 routes.get('/allproducts', getAllProduct);
-routes.get('/getproduct/:id',getproduct)
+routes.get('/getproduct/:id',getProduct)
 
 
 // Auth Routes
@@ -36,7 +36,7 @@ routes.put('/:id/cart/delete',deleteCartItem);
 routes.use(isAdmin);
 
 routes.post('/new', createProduct);
-routes.put('/:id',updateproduct)
+routes.put('/:id',updateProduct)
 
 
 export default routes;

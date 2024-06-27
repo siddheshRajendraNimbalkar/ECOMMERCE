@@ -8,10 +8,7 @@ app.use(cookieParser())
 import product from "./routes/productRoutes"
 import user from "./routes/userRoutes"
 import order from "./routes/orderRoute"
-import errorMiddleware from "./middleware/error";
 
-
-app.use(errorMiddleware)
 app.use("/api/v1/product",product)
 app.use("/api/v1/User",user);
 app.use("/api/v1/order",order);

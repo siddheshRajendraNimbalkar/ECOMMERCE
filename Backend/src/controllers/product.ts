@@ -1,12 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import Product from "../module/productModule";
-import asyncHandler from "../middleware/asyncError";
 
-export const createProduct = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = (req as any).user;
     const {
@@ -49,48 +44,69 @@ export const createProduct = async (
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      success: false,
+      message:"Internal server error"
+    });
   }
 };
 
-export const getAllProduct = asyncHandler(
-  async (req: Request, res: Response) => {
+export const getAllProduct = async (req: Request, res: Response) => {
+  try {
     const getallproduct = await Product.find();
 
-    if (getallproduct) {
-      return res.json({
+    if (getallproduct.length > 0) {
+      return res.status(200).json({
         success: true,
         getallproduct,
       });
     }
 
-    return res.json({
+    return res.status(404).json({
       success: false,
+      message: "No products found",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
     });
   }
-);
+};
 
-export const getproduct = asyncHandler(async (req: Request, res: Response) => {
-  const product = await Product.findById(req.params.id);
-  if (!product) {
-    return res.json({
-      message: "product not found",
+export const getProduct = async (req: Request, res: Response) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
     });
   }
+};
 
-  res.json({
-    success: true,
-    product: product,
-  });
-});
-
-export const updateproduct = asyncHandler(
-  async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
     let product = await Product.findById(req.params.id);
 
     if (!product) {
-      return res.status(500).json({
+      return res.status(404).json({
         success: false,
-        message: "something went wrong",
+        message: "Product not found",
       });
     }
 
@@ -100,32 +116,50 @@ export const updateproduct = asyncHandler(
     });
 
     if (!product) {
-      return res.json({
-        message: "some thing went wrong",
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
       });
     }
+
     return res.status(200).json({
       success: true,
-      updateProduct: product,
+      updatedProduct: product,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
     });
   }
-);
+};
 
-export const deleteProduct = asyncHandler(
-  async (req: Request, res: Response) => {
-    let product = await Product.findById(req.params.id);
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
-      return res.json({
-        message: "invalid product",
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
       });
     }
+
     await Product.findByIdAndDelete(req.params.id);
-    return res.json({
+
+    return res.status(200).json({
       success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
     });
   }
-);
+};
 
 export const getAllReview = async (req: Request, res: Response) => {
   const productId = req.params.id;
@@ -138,8 +172,8 @@ export const getAllReview = async (req: Request, res: Response) => {
   }
 
   try {
-    const product = await Product.findById(productId).populate("review"); 
-    
+    const product = await Product.findById(productId).populate("review");
+
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -147,14 +181,14 @@ export const getAllReview = async (req: Request, res: Response) => {
       });
     }
 
-    return res.json({
+    return res.status(200).json({
       success: true,
       reviews: product.review,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "An error occurred while fetching the product",
+      message: "Internal server error",
     });
   }
 };
@@ -180,6 +214,7 @@ export const updateOrCreateProductReview = async (req: Request, res: Response) =
 
   try {
     const product = await Product.findById(productId);
+
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -194,7 +229,7 @@ export const updateOrCreateProductReview = async (req: Request, res: Response) =
       });
     }
 
-    if(product.review.length == 0){
+    if(product.review.length === 0){
       const newReview = {
         id: user._id,
         name: user.username,
@@ -229,7 +264,7 @@ export const updateOrCreateProductReview = async (req: Request, res: Response) =
 
     await product.save();
     
-    return res.json({
+    return res.status(200).json({
       success: true,
       message: review ? "Review updated successfully" : "Review created successfully"
     });
@@ -292,7 +327,7 @@ export const deleteProductReview = async (req: Request, res: Response) => {
 
     await product.save();
 
-    return res.json({
+    return res.status(200).json({
       success: true,
       message: "Review deleted successfully"
     });
@@ -306,27 +341,30 @@ export const deleteProductReview = async (req: Request, res: Response) => {
 };
 
 export const ratingProduct = async(req:Request,res:Response) =>{
-  await Product.findById(req.params.id)
-  .then((product: any)=>{
-    // if(product){
-    //   return res.json({
-    //     success:false,
-    //     message:"product not found",
-    //   })
-    // }
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
     let avg = 0;
     product?.review.map((e: any) => avg += e.rating)
     product.rating = avg / product.review.length;;
-    product.save();
-    return res.json({
-      success:true,
-      rating:product.rating
+    await product.save();
+
+    return res.status(200).json({
+      success: true,
+      rating: product.rating
     });
-  }).catch((error) => {
+  } catch (error) {
     return res.status(500).json({
-        success: false,
-        message: 'Server error',
-        error: error.message
+      success: false,
+      message: "Internal server error",
+      error: (error as any).message
     });
-});
+  }
 };

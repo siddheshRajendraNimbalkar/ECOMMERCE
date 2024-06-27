@@ -12,8 +12,6 @@ app.use((0, cookie_parser_1.default)());
 const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const orderRoute_1 = __importDefault(require("./routes/orderRoute"));
-const error_1 = __importDefault(require("./middleware/error"));
-app.use(error_1.default);
 app.use("/api/v1/product", productRoutes_1.default);
 app.use("/api/v1/User", userRoutes_1.default);
 app.use("/api/v1/order", orderRoute_1.default);

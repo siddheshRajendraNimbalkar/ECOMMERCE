@@ -14,9 +14,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProductByKey = void 0;
 const productModule_1 = __importDefault(require("../module/productModule"));
-const asyncError_1 = __importDefault(require("../middleware/asyncError"));
-exports.getProductByKey = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const productByKey = yield productModule_1.default.find(req.query);
+const getProductByKey = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const name = req.query.key;
+    const str = name === null || name === void 0 ? void 0 : name.toString().substring(0, 6);
+    const price = name === null || name === void 0 ? void 0 : name.toString().substring(6, 10);
+    console.log(name, price, str);
+    if (price) {
+        let productByKey = yield productModule_1.default.find({
+            name: str,
+            price: price
+        });
+        if (!productByKey.length) {
+            const category = req.query.key;
+            productByKey = yield productModule_1.default.find({ category,
+                price: price
+            });
+        }
+        console.log(req.query.key);
+        if (!productByKey.length) {
+            return res.json({
+                sucess: false,
+                message: "result not found"
+            });
+        }
+        res.json({
+            success: true,
+            product: productByKey
+        });
+    }
+    let productByKey = yield productModule_1.default.find({ name });
+    if (!productByKey.length) {
+        const category = req.query.key;
+        productByKey = yield productModule_1.default.find({ category });
+    }
+    console.log(req.query.key);
     if (!productByKey.length) {
         return res.json({
             sucess: false,
@@ -27,4 +58,5 @@ exports.getProductByKey = (0, asyncError_1.default)((req, res) => __awaiter(void
         success: true,
         product: productByKey
     });
-}));
+});
+exports.getProductByKey = getProductByKey;

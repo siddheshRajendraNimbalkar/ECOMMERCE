@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 function connectDB() {
-    const db = process.env.DBURL
+    const db = process.env.DBURL || "mongodb://localhost:27017/ECOMMERCE"
     if(!db){
-        console.error('Database URL not provided in environment variables');
+        console.log('Database URL not provided in environment variables');
         process.exit(1);
     }
     mongoose.connect(db).then((data:any)=>{

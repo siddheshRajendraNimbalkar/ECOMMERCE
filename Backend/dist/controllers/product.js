@@ -12,9 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ratingProduct = exports.deleteProductReview = exports.updateOrCreateProductReview = exports.getAllReview = exports.deleteProduct = exports.updateproduct = exports.getproduct = exports.getAllProduct = exports.createProduct = void 0;
+exports.ratingProduct = exports.deleteProductReview = exports.updateOrCreateProductReview = exports.getAllReview = exports.deleteProduct = exports.updateProduct = exports.getProduct = exports.getAllProduct = exports.createProduct = void 0;
 const productModule_1 = __importDefault(require("../module/productModule"));
-const asyncError_1 = __importDefault(require("../middleware/asyncError"));
 const createProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = req.user;
@@ -46,67 +45,116 @@ const createProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     }
     catch (error) {
         console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
     }
 });
 exports.createProduct = createProduct;
-exports.getAllProduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getallproduct = yield productModule_1.default.find();
-    if (getallproduct) {
-        return res.json({
-            success: true,
-            getallproduct,
+const getAllProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const getallproduct = yield productModule_1.default.find();
+        if (getallproduct.length > 0) {
+            return res.status(200).json({
+                success: true,
+                getallproduct,
+            });
+        }
+        return res.status(404).json({
+            success: false,
+            message: "No products found",
         });
     }
-    return res.json({
-        success: false,
-    });
-}));
-exports.getproduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const product = yield productModule_1.default.findById(req.params.id);
-    if (!product) {
-        return res.json({
-            message: "product not found",
-        });
-    }
-    res.json({
-        success: true,
-        product: product,
-    });
-}));
-exports.updateproduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let product = yield productModule_1.default.findById(req.params.id);
-    if (!product) {
+    catch (error) {
+        console.log(error);
         return res.status(500).json({
             success: false,
-            message: "something went wrong",
+            message: "Internal server error"
         });
     }
-    product = yield productModule_1.default.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-    });
-    if (!product) {
-        return res.json({
-            message: "some thing went wrong",
+});
+exports.getAllProduct = getAllProduct;
+const getProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const product = yield productModule_1.default.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            product,
         });
     }
-    return res.status(200).json({
-        success: true,
-        updateProduct: product,
-    });
-}));
-exports.deleteProduct = (0, asyncError_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let product = yield productModule_1.default.findById(req.params.id);
-    if (!product) {
-        return res.json({
-            message: "invalid product",
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
         });
     }
-    yield productModule_1.default.findByIdAndDelete(req.params.id);
-    return res.json({
-        success: true,
-    });
-}));
+});
+exports.getProduct = getProduct;
+const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let product = yield productModule_1.default.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+        product = yield productModule_1.default.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+        });
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            updatedProduct: product,
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+});
+exports.updateProduct = updateProduct;
+const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const product = yield productModule_1.default.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+        yield productModule_1.default.findByIdAndDelete(req.params.id);
+        return res.status(200).json({
+            success: true,
+            message: "Product deleted successfully",
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+});
+exports.deleteProduct = deleteProduct;
 const getAllReview = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const productId = req.params.id;
     if (!productId) {
@@ -123,7 +171,7 @@ const getAllReview = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 message: "Product not found",
             });
         }
-        return res.json({
+        return res.status(200).json({
             success: true,
             reviews: product.review,
         });
@@ -131,7 +179,7 @@ const getAllReview = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         return res.status(500).json({
             success: false,
-            message: "An error occurred while fetching the product",
+            message: "Internal server error",
         });
     }
 });
@@ -166,7 +214,7 @@ const updateOrCreateProductReview = (req, res) => __awaiter(void 0, void 0, void
                 message: "User information is required"
             });
         }
-        if (product.review.length == 0) {
+        if (product.review.length === 0) {
             const newReview = {
                 id: user._id,
                 name: user.username,
@@ -198,7 +246,7 @@ const updateOrCreateProductReview = (req, res) => __awaiter(void 0, void 0, void
             product.numOfReview = product.review.length;
         }
         yield product.save();
-        return res.json({
+        return res.status(200).json({
             success: true,
             message: review ? "Review updated successfully" : "Review created successfully"
         });
@@ -252,7 +300,7 @@ const deleteProductReview = (req, res) => __awaiter(void 0, void 0, void 0, func
         product.review.pull(reviewId);
         product.numOfReview = product.review.length;
         yield product.save();
-        return res.json({
+        return res.status(200).json({
             success: true,
             message: "Review deleted successfully"
         });
@@ -267,29 +315,30 @@ const deleteProductReview = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.deleteProductReview = deleteProductReview;
 const ratingProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield productModule_1.default.findById(req.params.id)
-        .then((product) => {
-        // if(product){
-        //   return res.json({
-        //     success:false,
-        //     message:"product not found",
-        //   })
-        // }
+    try {
+        const product = yield productModule_1.default.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
         let avg = 0;
         product === null || product === void 0 ? void 0 : product.review.map((e) => avg += e.rating);
         product.rating = avg / product.review.length;
         ;
-        product.save();
-        return res.json({
+        yield product.save();
+        return res.status(200).json({
             success: true,
             rating: product.rating
         });
-    }).catch((error) => {
+    }
+    catch (error) {
         return res.status(500).json({
             success: false,
-            message: 'Server error',
+            message: "Internal server error",
             error: error.message
         });
-    });
+    }
 });
 exports.ratingProduct = ratingProduct;

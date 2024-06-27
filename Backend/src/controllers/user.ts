@@ -1,12 +1,10 @@
-import asyncHandler from "../middleware/asyncError";
 import { Request, Response } from "express";
 import User from "../module/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Product from "../module/productModule";
 
-export const registerUser = asyncHandler(
-  async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response) => {
     const { username, email, password, isAdmin } = req.body;
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
@@ -18,7 +16,8 @@ export const registerUser = asyncHandler(
       });
     }
 
-    const Email = await User.findOne({ email });
+    try {
+      const Email = await User.findOne({ email });
 
     if (Email) {
       return res.json({
@@ -55,8 +54,16 @@ export const registerUser = asyncHandler(
     return res.status(201).json({
       success: true,
     });
-  }
-);
+    } catch (error: any) {
+      console.log("Error"+error.message)
+      res.json({
+        success:false,
+        message:"Internal server error",
+        errorm:error,
+        error:error.message
+      })
+    }
+  };
 
 export const loginUser = async (req: Request, res: Response) => {
   try {

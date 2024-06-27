@@ -7,7 +7,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 function connectDB() {
     const db = process.env.DBURL;
     if (!db) {
-        console.error('Database URL not provided in environment variables');
+        console.log('Database URL not provided in environment variables');
         process.exit(1);
     }
     mongoose_1.default.connect(db).then((data) => {
