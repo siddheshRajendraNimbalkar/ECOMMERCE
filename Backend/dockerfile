@@ -13,7 +13,7 @@ COPY src ./src
 RUN npm i
 
 ENV PORT=4000
-ENV DBURL=mongodb+srv://siddhesh:sidd%40123@cluster0.dulnyi9.mongodb.net/ECOMMERCE?retryWrites=true&w=majority&appName=Cluster0
+ENV DBURL=DB_URL_HERE
 ENV JWT_SECRET=12354fgdtqwwer5ed
 ENV JWT_EXPIRES=5d 
 
