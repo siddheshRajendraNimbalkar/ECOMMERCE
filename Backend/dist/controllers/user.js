@@ -64,7 +64,9 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         console.log("Error" + error.message);
         res.json({
             success: false,
-            message: "Internal server error"
+            message: "Internal server error",
+            errorm: error,
+            error: error.message
         });
     }
 });

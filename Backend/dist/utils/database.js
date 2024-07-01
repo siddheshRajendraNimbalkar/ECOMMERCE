@@ -6,14 +6,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 function connectDB() {
     const db = process.env.DBURL;
+    console.log(`Database URL: ${db}`);
     if (!db) {
-        console.log('Database URL not provided in environment variables');
+        console.error('Database URL not provided in environment variables');
         process.exit(1);
     }
-    mongoose_1.default.connect(db).then((data) => {
-        console.log(`mongodb is connected to server ${data}`);
-    }).catch((error) => {
-        console.log(error);
+    mongoose_1.default.connect(`${db}`)
+        .then((data) => {
+        console.log(`MongoDB is connected to server ${data.connection.host}`);
+    })
+        .catch((error) => {
+        console.error('MongoDB connection error:', error);
+        process.exit(1);
     });
 }
 exports.default = connectDB;
