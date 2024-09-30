@@ -1,16 +1,18 @@
-import Header from "./components/Layout/Header"
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './components/Home/Home';
+import Header from './components/Layout/Header';
 
 function App() {
-
   return (
-    <>
+    <Router>
       <Header>
-        <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
       </Header>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;

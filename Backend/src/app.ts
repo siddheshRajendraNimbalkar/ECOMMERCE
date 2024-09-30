@@ -4,6 +4,10 @@ const app: Express = express();
 app.use(express.json());
 app.use(cookieParser())
 
+
+console.log("HELLO")
+
+
 // routes
 import product from "./routes/productRoutes"
 import user from "./routes/userRoutes"
