@@ -1,12 +1,12 @@
 import React from 'react'
-import Nave from './Nave'
 import Footer from './Footer'
+import Nave from './Nave1'
 
 const Header = ({children}:{children:React.ReactNode}) => {
   return (
     <>
         <Nave />
-        <div className="flex justify-between items-center h-16 bg-gray-100 px-4">
+        <div className="bg-gray-100">
           {children}
         </div>
         <Footer />
