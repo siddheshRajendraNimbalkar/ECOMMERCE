@@ -6,7 +6,7 @@ import Title from './Pages/Title';
 
 const Home = () => {
   return (
-    <div className="home-container">
+    <div className="home-container scroll-smooth">
       <Title />
       <Blog />
       <div className="container mx-auto px-2">

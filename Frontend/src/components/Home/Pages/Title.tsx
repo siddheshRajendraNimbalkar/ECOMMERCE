@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-
+import { FaArrowRight } from 'react-icons/fa';
 
 const Title = () => {
     const images = [
@@ -23,22 +23,28 @@ const Title = () => {
     <div className='flex justify-center items-end h-[100vh] w-full bg-[#F6F6F1]'>
         {/* left side */}
         <div className='w-1/2 h-[100vh] flex flex-col justify-center items-center'>
-            <div className='flex flex-col justify-center items-start md:w-[75%]'>
-            <h1 className='text-4xl font-bold'>Effortless <br /> Storefront Creation</h1>
-            <p>
+        <div className='flex flex-col justify-center items-start md:w-[75%]'>
+          <h1 className='text-4xl font-bold'>Effortless <br /> Storefront Creation</h1>
+          <p>
             An eCommerce website lets businesses sell products or services online. 
             It includes features like product listings, shopping carts, and secure payments, 
             making it easy for customers to browse and buy items.
-
-            </p>
-            <button className='bg-black text-white px-4 py-2 rounded-full mt-4 '>Get Started</button>
-            </div>
+          </p>
+          <button className='group bg-black text-white px-6 py-3 rounded-full mt-4 hover:scale-110 transition-all duration-300 relative overflow-hidden'>
+            <span className='relative z-10 flex items-center'>
+              Get Started
+              <FaArrowRight className='ml-2 transform group-hover:translate-x-1 transition-transform duration-300' />
+            </span>
+            <span className='absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left'></span>
+            <span className='absolute inset-0 bg-black transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left delay-150'></span>
+          </button>
         </div>
+      </div>
         {/* right side */}
         <div className='w-1/2 h-[100vh] pl-16 pr-16 hidden md:flex justify-center items-center' >
                 <div className='w-full bg-[#ACBFD5] rounded-md h-[80vh] flex justify-center items-center'>
-                    <div className='overflow-hidden p-4'>
-                        <img className='rounded-md' src={image} alt="image" />
+                    <div className='overflow-hidden p-4 bg-blue-100 rounded-md'>
+                        <img className='rounded-md hover:scale-110 transition-all duration-300' src={image} alt="image" />
                     </div>
                 </div>
         </div>

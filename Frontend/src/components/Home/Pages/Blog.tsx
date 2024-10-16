@@ -8,21 +8,21 @@ const Blog = () => {
       <img
         src="https://images.unsplash.com/photo-1676790408057-b56c464beb0f?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt="Bottom Left"
-        className="hidden md:block absolute md:top-32 ld:bottom-0 left-0 lg:m-2 w-24 h-32 rounded-md"
+        className="hidden md:block absolute bottom-0  left-0 lg:m-2 w-24 h-32 hover:scale-110 transition-all duration-300 rounded-md"
       />
 
       {/* Second image at the top right */}
       <img
         src="https://plus.unsplash.com/premium_photo-1669977749936-1343d0b0b4d9?q=80&w=474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt="Top Right"
-        className="absolute hidden md:block top-0 right-0 m-2 w-28 h-40 rounded-md"
+        className="absolute hidden md:block top-0 right-0 m-2 w-28 h-40 hover:scale-110 transition-all duration-300 rounded-md"
       />
 
       {/* Third image at the bottom right */}
       <img
         src="https://plus.unsplash.com/premium_photo-1674669321691-958db874f59e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt="Bottom Right"
-        className="hidden absolute lg:block top-40 right-28 w-32 h-32 rounded-md"
+        className="hidden absolute lg:block top-40 right-28 w-32 h-32 hover:scale-110 transition-all duration-300 rounded-md"
       />
 
       <div className="h-full w-full bg-[#BD9278] rounded-lg shadow-lg overflow-hidden">
